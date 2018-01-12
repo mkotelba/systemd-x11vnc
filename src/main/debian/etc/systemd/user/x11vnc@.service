@@ -1,0 +1,9 @@
+[Unit]
+Description=x11vnc Service
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/systemd-x11vnc
+StandardError=journal
+StandardInput=socket
+StandardOutput=socket

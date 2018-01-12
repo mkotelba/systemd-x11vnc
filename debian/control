@@ -1,0 +1,18 @@
+Source: systemd-x11vnc
+Section: admin
+Priority: optional
+Maintainer: Michal Kotelba <michal@kotelba.us>
+Uploaders: Michal Kotelba <michal@kotelba.us>
+Build-Depends: debhelper (>= 10.0.0)
+Standards-Version: 3.9.7
+Origin: Ubuntu
+Homepage: https://bitbucket.org/kotelba/systemd-x11vnc
+Vcs-Git:  https://bitbucket.org/kotelba/systemd-x11vnc
+Vcs-Browser: https://bitbucket.org/kotelba/systemd-x11vnc/src
+
+Package: systemd-x11vnc
+Architecture: all
+Depends: bash (>= 4.3), systemd (>= 229), x11vnc (>= 0.9.13), ${misc:Depends}
+Description: systemd x11vnc service.
+ This package contains a systemd user service for running per-user x11vnc
+ sessions.

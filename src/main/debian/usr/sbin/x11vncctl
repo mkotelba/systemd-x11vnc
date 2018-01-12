@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -e
+
+function _systemctl_socket() {
+    _systemctl "$@" "x11vnc.socket"
+}
+
+function _systemctl() {
+    "/bin/systemctl" --user "$@"
+}
+
+readonly DISABLE_CMD_NAME="disable"
+readonly ENABLE_CMD_NAME="enable"
+readonly RESTART_CMD_NAME="restart"
+readonly START_CMD_NAME="start"
+readonly STATUS_CMD_NAME="status"
+readonly STOP_CMD_NAME="stop"
+
+declare -Ar CMDS=(
+    ["${DISABLE_CMD_NAME}"]="${DISABLE_CMD_NAME}"
+    ["${ENABLE_CMD_NAME}"]="${ENABLE_CMD_NAME}"
+    ["${RESTART_CMD_NAME}"]="${RESTART_CMD_NAME}"
+    ["${START_CMD_NAME}"]="${START_CMD_NAME}"
+    ["${STATUS_CMD_NAME}"]="${STATUS_CMD_NAME}"
+    ["${STOP_CMD_NAME}"]="${STOP_CMD_NAME}"
+)
+
+cmdInput="${1:-${STATUS_CMD_NAME}}"
+(($# == 0)) || shift
+
+cmd="${CMDS[${cmdInput}]:-}"
+
+[[ -n "${cmd}" ]] || { printf "--" 'Invalid command: %s\n' "${cmdInput}" 1>&2 && exit 1; }
+
+_systemctl "daemon-reload"
+
+declare -i socketEnabled=0
+[[ "$(_systemctl_socket "is-enabled" 2>"/dev/null" || true)" != "enabled" ]] || socketEnabled=1
+
+case "${cmd}" in
+    "${DISABLE_CMD_NAME}")
+        ((${socketEnabled})) || { printf "--" 'x11vnc socket is not enabled for user: %s\n' "${user}" && exit 1; }
+        
+        _systemctl_socket --now "disable"
+        ;;
+    
+    "${ENABLE_CMD_NAME}")
+        ((!${socketEnabled})) || { printf "--" 'x11vnc socket is already enabled for user: %s\n' "${user}" && exit 1; }
+        
+        _systemctl_socket "enable"
+        ;;
+    
+    *)
+        _systemctl_socket "${cmd}"
+        ;;
+esac

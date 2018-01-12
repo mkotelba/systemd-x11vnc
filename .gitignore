@@ -1,0 +1,7 @@
+debian/build
+debian/systemd-x11vnc
+debian/*.debhelper
+debian/*.log
+debian/*.substvars
+debian/debhelper-build-stamp
+debian/files

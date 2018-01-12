@@ -1,0 +1,5 @@
+extend-diff-ignore = "(^|/)(\.git|[^\.]+\.(iml|ipr|iws))$"
+tar-ignore = ".git"
+tar-ignore = "*.iml"
+tar-ignore = "*.ipr"
+tar-ignore = "*.iws"

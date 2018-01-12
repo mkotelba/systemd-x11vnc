@@ -1,0 +1,12 @@
+[Unit]
+Description=x11vnc Socket
+
+[Socket]
+Accept=true
+ListenStream=5900
+MaxConnections=128
+TriggerLimitBurst=1
+TriggerLimitIntervalSec=1s
+
+[Install]
+WantedBy=sockets.target
