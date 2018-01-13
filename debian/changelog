@@ -1,3 +1,45 @@
+systemd-x11vnc (1.0.11) xenial; urgency=high
+
+  * (Attempting) to fix the Debian build process yet again by hardcoding relative source/build directory paths in the rules Makefile.
+
+ -- Michal Kotelba <michal@kotelba.us>  Sat, 13 Jan 2018 05:46:00 -0500
+
+systemd-x11vnc (1.0.10) xenial; urgency=high
+
+  * (Attempting) to fix the Debian build process yet again by reverting debhelper Debian package version requirement.
+
+ -- Michal Kotelba <michal@kotelba.us>  Sat, 13 Jan 2018 04:28:00 -0500
+
+systemd-x11vnc (1.0.9) xenial; urgency=high
+
+  * (Attempting) to fix the Debian build process yet again by disallowing nested Make (auto)clean target calls.
+
+ -- Michal Kotelba <michal@kotelba.us>  Sat, 13 Jan 2018 04:22:00 -0500
+
+systemd-x11vnc (1.0.8) xenial; urgency=low
+
+  * (Attempting) to fix the Debian build process yet again by further separating source/binary artifacts.
+
+ -- Michal Kotelba <michal@kotelba.us>  Sat, 13 Jan 2018 03:04:00 -0500
+
+systemd-x11vnc (1.0.7) xenial; urgency=high
+
+  * Fixed Debian build process yet again by renaming Makefile install/purge/remove targets.
+
+ -- Michal Kotelba <michal@kotelba.us>  Fri, 12 Jan 2018 23:32:00 -0500
+
+systemd-x11vnc (1.0.6) xenial; urgency=high
+
+  * Fixed Debian build process again by reverting debhelper Debian package version requirement.
+
+ -- Michal Kotelba <michal@kotelba.us>  Fri, 12 Jan 2018 23:10:00 -0500
+
+systemd-x11vnc (1.0.5) xenial; urgency=high
+
+  * Fixed Debian build process artifact separation (defaulting to binary).
+
+ -- Michal Kotelba <michal@kotelba.us>  Fri, 12 Jan 2018 22:58:00 -0500
+
 systemd-x11vnc (1.0.4) xenial; urgency=high
 
   * Fixed upload Make target.

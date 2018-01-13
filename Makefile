@@ -115,25 +115,27 @@ export PPA_NAME=ppa
 ####################################################################################################
 # TARGETS
 ####################################################################################################
-.PHONY: all clean build build-binary install purge remove upload
+.PHONY: all build build-src clean clean-src install purge remove upload
 
 all: clean build
 
 clean:
 	dh_clean
-	rm -f "$(PKG_CHANGES_FILE)" "$(PKG_DEB_FILE)" "$(PKG_DSC_FILE)" "$(PKG_ORIG_FILE)" "$(PKG_SRC_CHANGES_FILE)"
+	rm -f "$(PKG_CHANGES_FILE)" "$(PKG_DEB_FILE)"
 	rm -fr "$(BUILD_DIR)"
 
-build: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE)
+clean-src:
+	rm -f "$(PKG_DSC_FILE)" "$(PKG_ORIG_FILE)" "$(PKG_SRC_CHANGES_FILE)"
+
+build: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_CHANGES_FILE) $(PKG_DEB_FILE)
+
+build-src: $(PKG_SRC_CHANGES_FILE)
+
+$(PKG_CHANGES_FILE) $(PKG_DEB_FILE): $(PKG_DSC_FILE) $(PKG_ORIG_FILE)
+	dpkg-buildpackage -g -nc -sa
 
 $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE):
 	dpkg-buildpackage -nc -S -sa
-
-build-binary: $(PKG_CHANGES_FILE) $(PKG_DEB_FILE)
-
-$(PKG_CHANGES_FILE) $(PKG_DEB_FILE):
-	dpkg-source -b "."
-	dpkg-buildpackage -nc -sa
 
 install: $(PKG_DEB_FILE)
 	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
@@ -147,5 +149,5 @@ remove:
 	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
 	$(if $(shell $(call get_package_selection)),apt-get -y "$(MAKE_TARGET)" "$(PKG_NAME)")
 
-upload: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE)
+upload: $(PKG_SRC_CHANGES_FILE)
 	dput "ppa:$(PPA_USER)/$(PPA_NAME)" "$(PKG_SRC_CHANGES_FILE)"

@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Michal Kotelba <michal@kotelba.us>
 Uploaders: Michal Kotelba <michal@kotelba.us>
-Build-Depends: debhelper (>= 10.0.0)
+Build-Depends: debhelper
 Standards-Version: 3.9.7
 Origin: Ubuntu
 Homepage: https://bitbucket.org/kotelba/systemd-x11vnc

@@ -11,7 +11,7 @@ export SHELL=/bin/bash
 ####################################################################################################
 export DH_ALWAYS_EXCLUDE=.git/
 export DH_OPTIONS
-export DH_OPTIONS_AUTO=--builddirectory="$(BUILD_DEBIAN_DIR)" --sourcedirectory="$(SRC_DEBIAN_DIR)"
+export DH_OPTIONS_AUTO=--builddirectory="debian/build/main/debian" --sourcedirectory="src/main/debian"
 export DH_VERBOSE
 
 ####################################################################################################
@@ -30,6 +30,6 @@ override_dh_auto_test:
 	dh_auto_test $(DH_OPTIONS_AUTO)
 
 override_dh_install:
-	mkdir -p "$(BUILD_DEBIAN_DIR)"
-	cp -a "$(SRC_DEBIAN_DIR)" -T "$(BUILD_DEBIAN_DIR)"
-	dh_install --autodest --fail-missing --sourcedir="$(BUILD_DEBIAN_DIR)"
+	mkdir -p "debian/build/main/debian"
+	cp -a "src/main/debian" -T "debian/build/main/debian"
+	dh_install --autodest --fail-missing --sourcedir="debian/build/main/debian"
