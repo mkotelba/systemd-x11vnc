@@ -1,3 +1,11 @@
+systemd-x11vnc (1.0.4) xenial; urgency=high
+
+  * Fixed upload Make target.
+  * Added install, purge, remove Make targets.
+  * Refactored Debian build process to separate source/binary package/files generation.
+
+ -- Michal Kotelba <michal@kotelba.us>  Fri, 12 Jan 2018 22:43:00 -0500
+
 systemd-x11vnc (1.0.3) xenial; urgency=low
 
   * Refactored components to use systemd socket listeners.

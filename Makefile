@@ -7,6 +7,11 @@
 export SHELL=/bin/bash
 
 ####################################################################################################
+# VARIABLES: MAKE
+####################################################################################################
+export MAKE_TARGET=$@
+
+####################################################################################################
 # FUNCTIONS: FILESYSTEM
 ####################################################################################################
 define to_absolute_path
@@ -30,6 +35,19 @@ endef
 
 define get_package_architecture_host
 dpkg-architecture -qDEB_HOST_ARCH
+endef
+
+define get_package_selection
+dpkg --get-selections | egrep '^$(PKG_NAME)[[:space:]]+install$$'
+endef
+
+####################################################################################################
+# FUNCTIONS: PERMISSIONS
+####################################################################################################
+define assert_is_superuser
+ifneq ("$(shell id -u)","0")
+$$(error Must be root to execute the $(1) Make target)
+endif
 endef
 
 ####################################################################################################
@@ -80,12 +98,13 @@ export DEBIAN_CHANGELOG_FILE=$(DEBIAN_DIR)/changelog
 export DEBIAN_CONTROL_FILE=$(DEBIAN_DIR)/control
 
 ####################################################################################################
-# VARIABLES: PACKAGE FILE NAMES
+# VARIABLES: PACKAGE FILES
 ####################################################################################################
 export PKG_CHANGES_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_$(PKG_ARCH_HOST).changes
 export PKG_DEB_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_$(PKG_ARCH).deb
 export PKG_DSC_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION).dsc
 export PKG_ORIG_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION).tar.xz
+export PKG_SRC_CHANGES_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_source.changes
 
 ####################################################################################################
 # VARIABLES: UPLOAD
@@ -96,19 +115,37 @@ export PPA_NAME=ppa
 ####################################################################################################
 # TARGETS
 ####################################################################################################
-.PHONY: all clean build upload
+.PHONY: all clean build build-binary install purge remove upload
 
 all: clean build
 
 clean:
 	dh_clean
-	rm -f "$(PKG_CHANGES_FILE)" "$(PKG_DEB_FILE)" "$(PKG_DSC_FILE)" "$(PKG_ORIG_FILE)"
+	rm -f "$(PKG_CHANGES_FILE)" "$(PKG_DEB_FILE)" "$(PKG_DSC_FILE)" "$(PKG_ORIG_FILE)" "$(PKG_SRC_CHANGES_FILE)"
 	rm -fr "$(BUILD_DIR)"
 
-build: $(PKG_CHANGES_FILE) $(PKG_DEB_FILE) $(PKG_DSC_FILE) $(PKG_ORIG_FILE)
+build: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE)
 
-$(PKG_CHANGES_FILE) $(PKG_DEB_FILE) $(PKG_DSC_FILE) $(PKG_ORIG_FILE):
-	dpkg-buildpackage -g -nc -sa
+$(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE):
+	dpkg-buildpackage -nc -S -sa
 
-upload: build
-	dput "ppa:$(PPA_USER)/$(PPA_NAME)" "$(PKG_CHANGES_FILE)"
+build-binary: $(PKG_CHANGES_FILE) $(PKG_DEB_FILE)
+
+$(PKG_CHANGES_FILE) $(PKG_DEB_FILE):
+	dpkg-source -b "."
+	dpkg-buildpackage -nc -sa
+
+install: $(PKG_DEB_FILE)
+	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
+	dpkg -i "$(PKG_DEB_FILE)"
+
+purge:
+	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
+	$(if $(shell $(call get_package_selection)),apt-get -y "$(MAKE_TARGET)" "$(PKG_NAME)")
+
+remove:
+	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
+	$(if $(shell $(call get_package_selection)),apt-get -y "$(MAKE_TARGET)" "$(PKG_NAME)")
+
+upload: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE)
+	dput "ppa:$(PPA_USER)/$(PPA_NAME)" "$(PKG_SRC_CHANGES_FILE)"
