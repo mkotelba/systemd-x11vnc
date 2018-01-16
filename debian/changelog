@@ -1,3 +1,9 @@
+systemd-x11vnc (1.0.13) xenial; urgency=high
+
+  * Refactored Debian build process to utilize default patterns / file structure.
+
+ -- Michal Kotelba <michal@kotelba.us>  Tue, 16 Jan 2018 02:54:00 -0500
+
 systemd-x11vnc (1.0.12) xenial; urgency=high
 
   * Modified x11vnc wrapper script to be in the foreground.

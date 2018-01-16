@@ -1,17 +1,14 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-####################################################################################################
-# VARIABLES: SHELL
-####################################################################################################
-export SHELL=/bin/bash
+include include.mk
 
 ####################################################################################################
 # VARIABLES: DEBIAN HELPER
 ####################################################################################################
 export DH_ALWAYS_EXCLUDE=.git/
 export DH_OPTIONS
-export DH_OPTIONS_AUTO=--builddirectory="debian/build/main/debian" --sourcedirectory="src/main/debian"
+export DH_OPTIONS_AUTO=--builddirectory="$(BUILD_MAIN_DEBIAN_DIR)" --sourcedirectory="$(SRC_MAIN_DEBIAN_DIR)"
 export DH_VERBOSE
 
 ####################################################################################################
@@ -23,6 +20,10 @@ export DH_VERBOSE
 override_dh_auto_build:
 	dh_auto_build $(DH_OPTIONS_AUTO)
 
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -fr "$(BUILD_DIR)"
+
 override_dh_auto_install:
 	dh_auto_install $(DH_OPTIONS_AUTO)
 
@@ -30,6 +31,6 @@ override_dh_auto_test:
 	dh_auto_test $(DH_OPTIONS_AUTO)
 
 override_dh_install:
-	mkdir -p "debian/build/main/debian"
-	cp -a "src/main/debian" -T "debian/build/main/debian"
-	dh_install --autodest --fail-missing --sourcedir="debian/build/main/debian"
+	mkdir -p "$(BUILD_MAIN_DEBIAN_DIR)"
+	cp -a "$(SRC_MAIN_DEBIAN_DIR)" -T "$(BUILD_MAIN_DEBIAN_DIR)"
+	dh_install --autodest --fail-missing --sourcedir="$(BUILD_MAIN_DEBIAN_DIR)"

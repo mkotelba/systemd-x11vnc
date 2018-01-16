@@ -1,6 +1,3 @@
-#!/usr/bin/make -f
-# -*- makefile -*-
-
 ####################################################################################################
 # VARIABLES: SHELL
 ####################################################################################################
@@ -17,6 +14,7 @@ export MAKE_TARGET=$@
 define to_absolute_path
 $(abspath $(shell pwd)/$(1))
 endef
+export to_absolute_path
 
 ####################################################################################################
 # FUNCTIONS: PACKAGE
@@ -24,22 +22,27 @@ endef
 define get_package_name
 dpkg-parsechangelog -c 0 -S "Source"
 endef
+export get_package_name
 
 define get_package_version
 dpkg-parsechangelog -c 0 -S "Version"
 endef
+export get_package_version
 
 define get_package_architecture
 sed -nr '/^Architecture:[[:space:]]+[^$$]+$$/ s!^Architecture:[[:space:]]+([^$$]+)$$!\1!p' <"$(DEBIAN_CONTROL_FILE)"
 endef
+export get_package_architecture
 
 define get_package_architecture_host
 dpkg-architecture -qDEB_HOST_ARCH
 endef
+export get_package_architecture_host
 
 define get_package_selection
 dpkg --get-selections | egrep '^$(PKG_NAME)[[:space:]]+install$$'
 endef
+export get_package_selection
 
 ####################################################################################################
 # FUNCTIONS: PERMISSIONS
@@ -49,6 +52,7 @@ ifneq ("$(shell id -u)","0")
 $$(error Must be root to execute the $(1) Make target)
 endif
 endef
+export assert_is_superuser
 
 ####################################################################################################
 # VARIABLES: DIRECTORIES
@@ -62,26 +66,26 @@ export OUT_DIR=$(call to_absolute_path,..)
 ####################################################################################################
 export SRC_DIR=$(BASE_DIR)/src
 export SRC_MAIN_DIR=$(SRC_DIR)/main
-export SRC_DEBIAN_DIR=$(SRC_MAIN_DIR)/debian
+export SRC_MAIN_DEBIAN_DIR=$(SRC_MAIN_DIR)/debian
 
 ####################################################################################################
-# VARIABLES: TEST SOURCE DIRECTORIES
+# VARIABLES: SOURCE TEST DIRECTORIES
 ####################################################################################################
-export TEST_SRC_DIR=$(SRC_DIR)/test
-export TEST_SRC_DEBIAN_DIR=$(TEST_SRC_DIR)/debian
+export SRC_TEST_DIR=$(SRC_DIR)/test
+export SRC_TEST_DEBIAN_DIR=$(SRC_TEST_DIR)/debian
 
 ####################################################################################################
 # VARIABLES: BUILD DIRECTORIES
 ####################################################################################################
 export BUILD_DIR=$(DEBIAN_DIR)/build
 export BUILD_MAIN_DIR=$(BUILD_DIR)/main
-export BUILD_DEBIAN_DIR=$(BUILD_MAIN_DIR)/debian
+export BUILD_MAIN_DEBIAN_DIR=$(BUILD_MAIN_DIR)/debian
 
 ####################################################################################################
-# VARIABLES: TEST BUILD DIRECTORIES
+# VARIABLES: BUILD TEST DIRECTORIES
 ####################################################################################################
-export TEST_BUILD_DIR=$(BUILD_DIR)/test
-export TEST_BUILD_DEBIAN_DIR=$(TEST_BUILD_DIR)/debian
+export BUILD_TEST_DIR=$(BUILD_DIR)/test
+export BUILD_TEST_DEBIAN_DIR=$(BUILD_TEST_DIR)/debian
 
 ####################################################################################################
 # VARIABLES: PACKAGE
@@ -100,10 +104,12 @@ export DEBIAN_CONTROL_FILE=$(DEBIAN_DIR)/control
 ####################################################################################################
 # VARIABLES: PACKAGE FILES
 ####################################################################################################
+export PKG_BUILD_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_$(PKG_ARCH_HOST).build
 export PKG_CHANGES_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_$(PKG_ARCH_HOST).changes
 export PKG_DEB_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_$(PKG_ARCH).deb
 export PKG_DSC_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION).dsc
 export PKG_ORIG_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION).tar.xz
+export PKG_SRC_BUILD_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_source.build
 export PKG_SRC_CHANGES_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_source.changes
 
 ####################################################################################################
@@ -111,43 +117,3 @@ export PKG_SRC_CHANGES_FILE=$(OUT_DIR)/$(PKG_NAME)_$(PKG_VERSION)_source.changes
 ####################################################################################################
 export PPA_USER=michal.kotelba
 export PPA_NAME=ppa
-
-####################################################################################################
-# TARGETS
-####################################################################################################
-.PHONY: all build build-src clean clean-src install purge remove upload
-
-all: clean build
-
-clean:
-	dh_clean
-	rm -f "$(PKG_CHANGES_FILE)" "$(PKG_DEB_FILE)"
-	rm -fr "$(BUILD_DIR)"
-
-clean-src:
-	rm -f "$(PKG_DSC_FILE)" "$(PKG_ORIG_FILE)" "$(PKG_SRC_CHANGES_FILE)"
-
-build: $(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_CHANGES_FILE) $(PKG_DEB_FILE)
-
-build-src: $(PKG_SRC_CHANGES_FILE)
-
-$(PKG_CHANGES_FILE) $(PKG_DEB_FILE): $(PKG_DSC_FILE) $(PKG_ORIG_FILE)
-	dpkg-buildpackage -g -nc -sa
-
-$(PKG_DSC_FILE) $(PKG_ORIG_FILE) $(PKG_SRC_CHANGES_FILE):
-	dpkg-buildpackage -nc -S -sa
-
-install: $(PKG_DEB_FILE)
-	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
-	dpkg -i "$(PKG_DEB_FILE)"
-
-purge:
-	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
-	$(if $(shell $(call get_package_selection)),apt-get -y "$(MAKE_TARGET)" "$(PKG_NAME)")
-
-remove:
-	$(eval $(call assert_is_superuser,$(MAKE_TARGET)))
-	$(if $(shell $(call get_package_selection)),apt-get -y "$(MAKE_TARGET)" "$(PKG_NAME)")
-
-upload: $(PKG_SRC_CHANGES_FILE)
-	dput "ppa:$(PPA_USER)/$(PPA_NAME)" "$(PKG_SRC_CHANGES_FILE)"
