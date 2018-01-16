@@ -2,28 +2,6 @@
 
 set -e
 
-function _x11vnc() {
-    declare -i rfbPort=$1
-    shift
-    
-    exec "${X11VNC_EXEC_FILE}" \
-        -auth "${XAUTHORITY}" \
-        -bg \
-        -display "${DISPLAY}" \
-        -env HOME="${HOME}" \
-        -env WAITBG=5 \
-        -forever \
-        -inetd \
-        -prog "${X11VNC_EXEC_FILE}" \
-        -rfbport ${rfbPort} \
-        -rfbportv6 ${rfbPort} \
-        -rc <(
-            cat "${X11VNC_SYSTEM_RC_FILE}"
-            
-            ! [[ -f "${X11VNC_USER_RC_FILE}" ]] || { printf "--" '\n'; cat "${X11VNC_USER_RC_FILE}"; }
-        )
-}
-
 readonly X11VNC_EXEC_FILE="/usr/bin/x11vnc"
 
 readonly X11VNC_RC_FILE_NAME="systemd-x11vnc.x11vncrc"
@@ -42,4 +20,17 @@ declare -i rfbPort=$((${BASE_RFB_PORT} + ${BASH_REMATCH[1]}))
 [[ ( -n "${XAUTHORITY:-}" ) && ( -f "${XAUTHORITY:-}" ) ]] || \
     { printf "--" 'Invalid XAUTHORITY environment variable value: %s\n' "${XAUTHORITY:-}" 1>&2 && exit 1; }
 
-_x11vnc ${rfbPort}
+exec "${X11VNC_EXEC_FILE}" \
+    -auth "${XAUTHORITY}" \
+    -display "${DISPLAY}" \
+    -env HOME="${HOME}" \
+    -forever \
+    -inetd \
+    -prog "${X11VNC_EXEC_FILE}" \
+    -rfbport ${rfbPort} \
+    -rfbportv6 ${rfbPort} \
+    -rc <(
+        cat "${X11VNC_SYSTEM_RC_FILE}"
+        
+        ! [[ -f "${X11VNC_USER_RC_FILE}" ]] || { printf "--" '\n'; cat "${X11VNC_USER_RC_FILE}"; }
+    )

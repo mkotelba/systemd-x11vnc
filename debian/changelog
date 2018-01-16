@@ -1,3 +1,9 @@
+systemd-x11vnc (1.0.12) xenial; urgency=high
+
+  * Modified x11vnc wrapper script to be in the foreground.
+
+ -- Michal Kotelba <michal@kotelba.us>  Mon, 15 Jan 2018 20:42:00 -0500
+
 systemd-x11vnc (1.0.11) xenial; urgency=high
 
   * (Attempting) to fix the Debian build process yet again by hardcoding relative source/build directory paths in the rules Makefile.

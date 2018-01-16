@@ -2,7 +2,7 @@
 Description=x11vnc Service
 
 [Service]
-Type=forking
+Type=simple
 ExecStart=/usr/sbin/systemd-x11vnc
 StandardError=journal
 StandardInput=socket

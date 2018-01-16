@@ -4,7 +4,7 @@ Description=x11vnc Socket
 [Socket]
 Accept=true
 ListenStream=5900
-MaxConnections=128
+MaxConnections=16
 TriggerLimitBurst=1
 TriggerLimitIntervalSec=1s
 
