@@ -1,36 +1,20 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-include include.mk
+####################################################################################################
+# VARIABLES: SHELL
+####################################################################################################
+export SHELL=/bin/bash
 
 ####################################################################################################
 # VARIABLES: DEBIAN HELPER
 ####################################################################################################
 export DH_ALWAYS_EXCLUDE=.git/
-export DH_OPTIONS
-export DH_OPTIONS_AUTO=--builddirectory="$(BUILD_MAIN_DEBIAN_DIR)" --sourcedirectory="$(SRC_MAIN_DEBIAN_DIR)"
-export DH_VERBOSE
+export DH_OPTIONS?=
+export DH_VERBOSE?=0
 
 ####################################################################################################
 # TARGETS
 ####################################################################################################
 %:
 	dh "$@"
-
-override_dh_auto_build:
-	dh_auto_build $(DH_OPTIONS_AUTO)
-
-override_dh_auto_clean:
-	dh_auto_clean
-	rm -fr "$(BUILD_DIR)"
-
-override_dh_auto_install:
-	dh_auto_install $(DH_OPTIONS_AUTO)
-
-override_dh_auto_test:
-	dh_auto_test $(DH_OPTIONS_AUTO)
-
-override_dh_install:
-	mkdir -p "$(BUILD_MAIN_DEBIAN_DIR)"
-	cp -a "$(SRC_MAIN_DEBIAN_DIR)" -T "$(BUILD_MAIN_DEBIAN_DIR)"
-	dh_install --autodest --fail-missing --sourcedir="$(BUILD_MAIN_DEBIAN_DIR)"

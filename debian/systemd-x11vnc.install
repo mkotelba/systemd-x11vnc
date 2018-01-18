@@ -1,1 +1,2 @@
-*
+src/main/debian/etc/* etc/
+src/main/debian/usr/* usr/

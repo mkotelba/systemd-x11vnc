@@ -1,3 +1,10 @@
+systemd-x11vnc (1.0.14) xenial; urgency=high
+
+  * Moved version control repository from Bitbucket to GitHub.
+  * Simplified/standardized Debian build process further.
+
+ -- Michal Kotelba <michal@kotelba.us>  Thu, 18 Jan 2018 11:32:00 -0500
+
 systemd-x11vnc (1.0.13) xenial; urgency=high
 
   * Refactored Debian build process to utilize default patterns / file structure.

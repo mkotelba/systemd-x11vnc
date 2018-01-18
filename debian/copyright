@@ -1,9 +1,9 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: systemd-x11vnc
-Source: https://bitbucket.org/kotelba/systemd-x11vnc
+Source: https://github.com/mkotelba/systemd-x11vnc
 
 Files: *
-Copyright: 2017 Michal Kotelba <michal@kotelba.us>
+Copyright: 2018 Michal Kotelba <michal@kotelba.us>
 License: Apache-2.0
 
 License: Apache-2.0

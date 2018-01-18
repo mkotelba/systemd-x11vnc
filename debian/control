@@ -2,13 +2,12 @@ Source: systemd-x11vnc
 Section: admin
 Priority: optional
 Maintainer: Michal Kotelba <michal@kotelba.us>
-Uploaders: Michal Kotelba <michal@kotelba.us>
 Build-Depends: debhelper
 Standards-Version: 3.9.7
 Origin: Ubuntu
-Homepage: https://bitbucket.org/kotelba/systemd-x11vnc
-Vcs-Git:  https://bitbucket.org/kotelba/systemd-x11vnc
-Vcs-Browser: https://bitbucket.org/kotelba/systemd-x11vnc/src
+Homepage: https://github.com/mkotelba/systemd-x11vnc
+Vcs-Git: https://github.com/mkotelba/systemd-x11vnc.git
+Vcs-Browser: https://github.com/mkotelba/systemd-x11vnc
 
 Package: systemd-x11vnc
 Architecture: all
